@@ -60,8 +60,6 @@ public class ProfileActivity extends BaseActivity {
     // ACTIONS
     // --------------------
 
-    // 5 - Update onClick Listeners
-
     @OnClick(R.id.profile_activity_button_update)
     public void onClickUpdateButton() {
         this.updateUsernameInFirebase();
@@ -103,7 +101,7 @@ public class ProfileActivity extends BaseActivity {
 
     private void deleteUserFromFirebase() {
         if (this.getCurrentUser() != null) {
-            //4 - We also delete user from firestore storage
+
             UserHelper.deleteUser(this.getCurrentUser().getUid()).addOnFailureListener(this.onFailureListener());
 
             AuthUI.getInstance()
@@ -112,7 +110,6 @@ public class ProfileActivity extends BaseActivity {
         }
     }
 
-    // 3 - Update User Username
     private void updateUsernameInFirebase() {
 
         this.progressBar.setVisibility(View.VISIBLE);
@@ -125,7 +122,6 @@ public class ProfileActivity extends BaseActivity {
         }
     }
 
-    // 2 - Update User Mentor (is or not)
     private void updateUserIsMentor() {
         if (this.getCurrentUser() != null) {
             UserHelper.updateIsMentor(this.getCurrentUser().getUid(), this.checkBoxIsMentor.isChecked()).addOnFailureListener(this.onFailureListener());
@@ -136,7 +132,6 @@ public class ProfileActivity extends BaseActivity {
     // UI
     // --------------------
 
-    // 6 - Arranging method that updating UI with Firestore data
     private void updateUIWhenCreating() {
 
         if (this.getCurrentUser() != null) {
@@ -152,7 +147,6 @@ public class ProfileActivity extends BaseActivity {
 
             this.textViewEmail.setText(email);
 
-            // 7 - Get additional data from Firestore (isMentor & Username)
             UserHelper.getUser(this.getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -176,7 +170,6 @@ public class ProfileActivity extends BaseActivity {
                     case DELETE_USER_TASK:
                         finish();
                         break;
-                    // 8 - Hiding Progress bar after request completed
                     case UPDATE_USERNAME:
                         progressBar.setVisibility(View.INVISIBLE);
                         break;

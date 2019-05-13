@@ -19,9 +19,9 @@ public class UserHelper {
     // --- CREATE ---
 
     public static Task<Void> createUser(String uid, String username, String urlPicture) {
-        // 1 - Create User object
+
         User userToCreate = new User(uid, username, urlPicture);
-        // 2 - Add a new User Document to Firestore
+
         return UserHelper.getUsersCollection()
                 .document(uid) // Setting uID for Document
                 .set(userToCreate); // Setting object for Document

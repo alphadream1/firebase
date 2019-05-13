@@ -55,7 +55,7 @@ public class MainActivity extends BaseActivity {
 
     @OnClick(R.id.main_activity_button_chat)
     public void onClickChatButton() {
-        // 2 - Check if user is connected before launching MentorActivity
+
         if (this.isCurrentUserLogged()) {
             this.startMentorChatActivity();
         } else {
@@ -67,7 +67,6 @@ public class MainActivity extends BaseActivity {
     // REST REQUEST
     // --------------------
 
-    // 1 - Http request that create user in firestore
     private void createUserInFirestore() {
 
         if (this.getCurrentUser() != null) {
@@ -104,12 +103,10 @@ public class MainActivity extends BaseActivity {
         startActivity(intent);
     }
 
-    // 1 - Starting Mentor Activity
     private void startMentorChatActivity() {
         Intent intent = new Intent(this, MentorChatActivity.class);
         startActivity(intent);
     }
-
 
     // --------------------
     // UI
@@ -139,7 +136,6 @@ public class MainActivity extends BaseActivity {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
-                // 2 - CREATE USER IN FIRESTORE
                 this.createUserInFirestore();
                 showSnackBar(this.coordinatorLayout, getString(R.string.connection_succeed));
             } else { // ERRORS

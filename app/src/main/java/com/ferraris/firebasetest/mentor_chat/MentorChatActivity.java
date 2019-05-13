@@ -1,16 +1,23 @@
 package com.ferraris.firebasetest.mentor_chat;
 
+import android.Manifest;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.ferraris.firebasetest.R;
 import com.ferraris.firebasetest.api.MessageHelper;
 import com.ferraris.firebasetest.api.UserHelper;
@@ -24,11 +31,13 @@ import com.google.firebase.firestore.Query;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import pub.devrel.easypermissions.AfterPermissionGranted;
+import pub.devrel.easypermissions.EasyPermissions;
 
 public class MentorChatActivity extends BaseActivity implements MentorChatAdapter.Listener {
 
     // FOR DESIGN
-    // 1 - Getting all views needed
+
     @BindView(R.id.activity_mentor_chat_recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.activity_mentor_chat_text_view_recycler_view_empty)
@@ -39,16 +48,22 @@ public class MentorChatActivity extends BaseActivity implements MentorChatAdapte
     ImageView imageViewPreview;
 
     // FOR DATA
-    // 2 - Declaring Adapter and data
+
     private MentorChatAdapter mentorChatAdapter;
     @Nullable
     private User modelCurrentUser;
     private String currentChatName;
+    private Uri uriImageSelected;
 
-    // STATIC DATA FOR CHAT (3)
+    // STATIC DATA FOR CHAT
     private static final String CHAT_NAME_ANDROID = "android";
     private static final String CHAT_NAME_BUG = "bug";
     private static final String CHAT_NAME_FIREBASE = "firebase";
+
+    // STATIC DATA FOR PICTURE
+    private static final String PERMS = Manifest.permission.READ_EXTERNAL_STORAGE;
+    private static final int RC_IMAGE_PERMS = 100;
+    private static final int RC_CHOOSE_PHOTO = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,17 +79,33 @@ public class MentorChatActivity extends BaseActivity implements MentorChatAdapte
         return R.layout.activity_mentor_chat;
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        this.handleResponse(requestCode, resultCode, data);
+    }
+
     // --------------------
     // ACTIONS
     // --------------------
 
     @OnClick(R.id.activity_mentor_chat_send_button)
     public void onClickSendMessage() {
+        if (!TextUtils.isEmpty(editTextMessage.getText()) && modelCurrentUser != null) {
+            MessageHelper.createMessageForChat(editTextMessage.getText().toString(), this.currentChatName, modelCurrentUser).addOnFailureListener(this.onFailureListener());
+            this.editTextMessage.setText("");
+        }
     }
 
     @OnClick({R.id.activity_mentor_chat_android_chat_button, R.id.activity_mentor_chat_firebase_chat_button, R.id.activity_mentor_chat_bug_chat_button})
     public void onClickChatButtons(ImageButton imageButton) {
-        // 8 - Re-Configure the RecyclerView depending chosen chat
+
         switch (Integer.valueOf(imageButton.getTag().toString())) {
             case 10:
                 this.configureRecyclerView(CHAT_NAME_ANDROID);
@@ -89,13 +120,15 @@ public class MentorChatActivity extends BaseActivity implements MentorChatAdapte
     }
 
     @OnClick(R.id.activity_mentor_chat_add_file_button)
+    @AfterPermissionGranted(RC_IMAGE_PERMS)
     public void onClickAddFile() {
+        this.chooseImageFromPhone();
     }
 
     // --------------------
     // REST REQUESTS
     // --------------------
-    // 4 - Get Current User from Firestore
+
     private void getCurrentUserFromFirestore() {
         UserHelper.getUser(getCurrentUser().getUid()).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -108,7 +141,7 @@ public class MentorChatActivity extends BaseActivity implements MentorChatAdapte
     // --------------------
     // UI
     // --------------------
-    // 5 - Configure RecyclerView with a Query
+
     private void configureRecyclerView(String chatName) {
         //Track current chat name
         this.currentChatName = chatName;
@@ -124,7 +157,7 @@ public class MentorChatActivity extends BaseActivity implements MentorChatAdapte
         recyclerView.setAdapter(this.mentorChatAdapter);
     }
 
-    // 6 - Create options for RecyclerView from a Query
+
     private FirestoreRecyclerOptions<Message> generateOptionsForAdapter(Query query) {
         return new FirestoreRecyclerOptions.Builder<Message>()
                 .setQuery(query, Message.class)
@@ -138,7 +171,34 @@ public class MentorChatActivity extends BaseActivity implements MentorChatAdapte
 
     @Override
     public void onDataChanged() {
-        // 7 - Show TextView in case RecyclerView is empty
+
         textViewRecyclerViewEmpty.setVisibility(this.mentorChatAdapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
+    }
+
+    // --------------------
+    // FILE MANAGEMENT
+    // --------------------
+
+    private void chooseImageFromPhone() {
+        if (!EasyPermissions.hasPermissions(this, PERMS)) {
+            EasyPermissions.requestPermissions(this, getString(R.string.popup_title_permission_files_access), RC_IMAGE_PERMS, PERMS);
+            return;
+        }
+        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i, RC_CHOOSE_PHOTO);
+    }
+
+    private void handleResponse(int requestCode, int resultCode, Intent data) {
+        if (requestCode == RC_CHOOSE_PHOTO) {
+            if (resultCode == RESULT_OK) { //SUCCESS
+                this.uriImageSelected = data.getData();
+                Glide.with(this) //SHOWING PREVIEW OF IMAGE
+                        .load(this.uriImageSelected)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(this.imageViewPreview);
+            } else {
+                Toast.makeText(this, getString(R.string.toast_title_no_image_chosen), Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
