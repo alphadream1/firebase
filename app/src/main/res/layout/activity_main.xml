@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_activity_coordinator_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ferraris.firebasetest.MainActivity">
+
+    <!-- MAIN CONTAINER -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <!-- IMAGE VIEW FIREBASE OC -->
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_large_margin"
+            android:background="@drawable/ic_logo_auth"
+            android:contentDescription="@string/logofirebase" />
+
+        <!-- TITLE FIREBASE OC -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin"
+            android:text="@string/app_name"
+            android:textSize="@dimen/default_title_size"
+            android:textStyle="bold" />
+
+        <!-- DESCRIPTION FIREBASE OC -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/default_margin"
+            android:text="@string/main_activity_description"
+            android:textSize="@dimen/default_text_size" />
+
+        <!-- BUTTONS CONTAINER -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/default_large_margin"
+            android:gravity="bottom"
+            android:orientation="vertical">
+
+            <!-- BUTTON LOGIN -->
+            <Button
+                android:id="@+id/main_activity_button_login"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/default_large_margin"
+                android:background="@drawable/button_radius_primary_color"
+                android:padding="@dimen/default_large_margin"
+                android:text="@string/login"
+                android:textColor="#fff"
+                android:textSize="@dimen/default_text_size" />
+
+            <!-- BUTTON CHAT -->
+            <Button
+                android:id="@+id/main_activity_button_chat"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/default_large_margin"
+                android:background="@drawable/button_radius_accent_color"
+                android:padding="@dimen/default_large_margin"
+                android:text="@string/chat_with_mentor"
+                android:textColor="#fff"
+                android:textSize="@dimen/default_text_size" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>
