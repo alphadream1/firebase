@@ -27,7 +27,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //GLIDE
-    implementation 'com.github.bumptech.glide:glide:4.3.1'
+    implementation 'com.github.bumptech.glide:glide:4.4.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.3.1'
 
     //BUTTERKNIFE
@@ -35,11 +35,13 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
     //FIREBASE
-    implementation 'com.google.firebase:firebase-core:16.0.8'
+    implementation 'com.google.firebase:firebase-core:16.0.9'
 
     // FirebaseUI
     implementation 'com.firebaseui:firebase-ui-auth:4.3.2'
     implementation 'com.android.support:design:28.0.0'
+
+    implementation 'com.firebaseui:firebase-ui-firestore:3.1.3'
 
     //Facebook
     implementation 'com.facebook.android:facebook-android-sdk:[4,5)' //les versions >4 et <5!!! cool
