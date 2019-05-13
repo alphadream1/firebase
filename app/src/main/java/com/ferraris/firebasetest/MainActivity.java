@@ -8,6 +8,7 @@ import android.widget.Button;
 import com.ferraris.firebasetest.api.UserHelper;
 import com.ferraris.firebasetest.auth.ProfileActivity;
 import com.ferraris.firebasetest.base.BaseActivity;
+import com.ferraris.firebasetest.mentor_chat.MentorChatActivity;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.ErrorCodes;
 import com.firebase.ui.auth.IdpResponse;
@@ -52,6 +53,16 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @OnClick(R.id.main_activity_button_chat)
+    public void onClickChatButton() {
+        // 2 - Check if user is connected before launching MentorActivity
+        if (this.isCurrentUserLogged()) {
+            this.startMentorChatActivity();
+        } else {
+            this.showSnackBar(this.coordinatorLayout, getString(R.string.error_not_connected));
+        }
+    }
+
     // --------------------
     // REST REQUEST
     // --------------------
@@ -90,6 +101,12 @@ public class MainActivity extends BaseActivity {
 
     private void startProfileActivity() {
         Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+
+    // 1 - Starting Mentor Activity
+    private void startMentorChatActivity() {
+        Intent intent = new Intent(this, MentorChatActivity.class);
         startActivity(intent);
     }
 
