@@ -5,6 +5,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.widget.Button;
 
+import com.ferraris.firebasetest.api.UserHelper;
 import com.ferraris.firebasetest.auth.ProfileActivity;
 import com.ferraris.firebasetest.base.BaseActivity;
 import com.firebase.ui.auth.AuthUI;
@@ -48,6 +49,23 @@ public class MainActivity extends BaseActivity {
             this.startProfileActivity();
         } else {
             this.startSignInActivity();
+        }
+    }
+
+    // --------------------
+    // REST REQUEST
+    // --------------------
+
+    // 1 - Http request that create user in firestore
+    private void createUserInFirestore() {
+
+        if (this.getCurrentUser() != null) {
+
+            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
+            String username = this.getCurrentUser().getDisplayName();
+            String uid = this.getCurrentUser().getUid();
+
+            UserHelper.createUser(uid, username, urlPicture).addOnFailureListener(this.onFailureListener());
         }
     }
 
@@ -104,6 +122,8 @@ public class MainActivity extends BaseActivity {
 
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == RESULT_OK) { // SUCCESS
+                // 2 - CREATE USER IN FIRESTORE
+                this.createUserInFirestore();
                 showSnackBar(this.coordinatorLayout, getString(R.string.connection_succeed));
             } else { // ERRORS
                 if (response == null) {
